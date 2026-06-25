@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SafiriPay — Smart Transit. Real Payments.</title>
+  <link rel="manifest" href="manifest.json"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black:   #0a0a0a;
+      --blue:    #1A56DB;
+      --blue-light: #3B82F6;
+      --gold:    #D4AF37;
+      --gold-dark: #a88a1c;
+      --white:   #F1F5F9;
+      --gray:    #94a3b8;
+      --dark2:   #111827;
+      --dark3:   #1f2937;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212,175,55,0.2);
+      padding: 0 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 70px;
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: white;
+    }
+    .nav-logo-text { font-size: 22px; font-weight: 800; color: var(--white); }
+    .nav-logo-text span { color: var(--gold); }
+
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a {
+      color: var(--gray); text-decoration: none; font-size: 15px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-cta {
+      background: var(--gold); color: var(--black);
+      padding: 10px 24px; border-radius: 50px;
+      font-weight: 700; font-size: 14px; text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--gold-dark); transform: translateY(-1px); }
+
+    .nav-hamburger {
+      display: none; background: none; border: none;
+      color: var(--white); font-size: 22px; cursor: pointer;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 100px 5% 60px;
+      position: relative; overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+    }
+    .hero-bg-slide {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      opacity: 0; transition: opacity 1.2s ease;
+    }
+    .hero-bg-slide.active { opacity: 1; }
+    .hero-bg-slide:nth-child(1) { background: linear-gradient(135deg, #0a1628 0%, #1A56DB22 100%); }
+    .hero-bg-slide:nth-child(2) { background: linear-gradient(135deg, #0a1628 0%, #D4AF3722 100%); }
+    .hero-bg-slide:nth-child(3) { background: linear-gradient(135deg, #0a1628 0%, #16305022 100%); }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(10,10,10,0.95) 50%, rgba(10,10,10,0.3));
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      max-width: 620px;
+    }
+
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(212,175,55,0.12);
+      border: 1px solid rgba(212,175,55,0.3);
+      color: var(--gold); padding: 8px 18px; border-radius: 50px;
+      font-size: 13px; font-weight: 600; margin-bottom: 28px;
+    }
+    .hero-badge i { font-size: 11px; }
+
+    .hero-title {
+      font-size: clamp(40px, 6vw, 68px);
+      font-weight: 900; line-height: 1.05;
+      margin-bottom: 24px; letter-spacing: -1px;
+    }
+    .hero-title .line2 { color: var(--gold); }
+    .hero-title .line3 { color: var(--blue-light); }
+
+    .hero-sub {
+      font-size: 18px; color: var(--gray);
+      line-height: 1.8; margin-bottom: 40px; max-width: 500px;
+    }
+
+    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 56px; }
+
+    .btn-primary {
+      background: var(--gold); color: var(--black);
+      padding: 16px 36px; border-radius: 50px;
+      font-weight: 800; font-size: 16px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 10px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(212,175,55,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(212,175,55,0.4); }
+
+    .btn-secondary {
+      background: transparent; color: var(--white);
+      padding: 16px 36px; border-radius: 50px;
+      font-weight: 700; font-size: 16px; text-decoration: none;
+      border: 2px solid rgba(255,255,255,0.2);
+      display: inline-flex; align-items: center; gap: 10px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+    .hero-stats { display: flex; gap: 40px; flex-wrap: wrap; }
+    .hero-stat-num { font-size: 32px; font-weight: 900; color: var(--gold); }
+    .hero-stat-label { font-size: 13px; color: var(--gray); margin-top: 2px; }
+
+    /* Slide dots */
+    .hero-dots {
+      position: absolute; bottom: 32px; left: 5%; z-index: 2;
+      display: flex; gap: 8px;
+    }
+    .hero-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.3); cursor: pointer;
+      transition: background 0.3s, width 0.3s;
+      border: none;
+    }
+    .hero-dot.active { background: var(--gold); width: 24px; border-radius: 4px; }
+
+    /* ── HOW IT WORKS ── */
+    .section { padding: 100px 5%; }
+    .section-label {
+      display: inline-block;
+      background: rgba(212,175,55,0.1); color: var(--gold);
+      border: 1px solid rgba(212,175,55,0.3);
+      padding: 6px 18px; border-radius: 50px;
+      font-size: 13px; font-weight: 600; margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 900; line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .section-sub { color: var(--gray); font-size: 17px; line-height: 1.7; max-width: 560px; }
+
+    .how-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px; margin-top: 60px;
+    }
+
+    .how-card {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px; padding: 32px 24px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .how-card:hover { border-color: rgba(212,175,55,0.4); transform: translateY(-4px); }
+
+    .how-step-num {
+      font-size: 48px; font-weight: 900;
+      color: rgba(212,175,55,0.12); position: absolute;
+      top: 16px; right: 20px; line-height: 1;
+    }
+    .how-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 20px;
+    }
+    .how-icon.blue { background: rgba(26,86,219,0.15); color: var(--blue-light); }
+    .how-icon.gold { background: rgba(212,175,55,0.12); color: var(--gold); }
+    .how-icon.green { background: rgba(22,163,74,0.12); color: #4ade80; }
+    .how-icon.red { background: rgba(220,38,38,0.12); color: #f87171; }
+    .how-icon.purple { background: rgba(139,92,246,0.12); color: #a78bfa; }
+    .how-icon.teal { background: rgba(20,184,166,0.12); color: #2dd4bf; }
+
+    .how-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+    .how-card p { font-size: 14px; color: var(--gray); line-height: 1.7; }
+
+    /* ── COMPANIES ── */
+    .companies-section { background: var(--dark2); padding: 100px 5%; }
+
+    .companies-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; margin-top: 60px;
+    }
+
+    .company-card {
+      background: var(--dark3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px; padding: 32px;
+      display: flex; flex-direction: column; gap: 16px;
+      transition: border-color 0.3s, transform 0.3s;
+      text-decoration: none; color: inherit;
+    }
+    .company-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+
+    .company-logo {
+      width: 60px; height: 60px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; font-weight: 900;
+    }
+    .company-logo.sm { background: rgba(26,86,219,0.2); color: var(--blue-light); }
+    .company-logo.cs { background: rgba(212,175,55,0.15); color: var(--gold); }
+    .company-logo.lt { background: rgba(22,163,74,0.15); color: #4ade80; }
+
+    .company-name { font-size: 20px; font-weight: 800; }
+    .company-routes { font-size: 13px; color: var(--gray); }
+    .company-tag {
+      display: inline-block;
+      background: rgba(212,175,55,0.1); color: var(--gold);
+      border: 1px solid rgba(212,175,55,0.2);
+      padding: 4px 12px; border-radius: 50px; font-size: 12px; font-weight: 600;
+      align-self: flex-start;
+    }
+    .company-arrow { color: var(--gray); font-size: 13px; margin-top: auto; }
+    .company-arrow i { margin-left: 6px; transition: transform 0.2s; }
+    .company-card:hover .company-arrow i { transform: translateX(4px); }
+
+    /* ── PRICING ── */
+    .pricing-section { padding: 100px 5%; }
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; margin-top: 60px; max-width: 700px;
+    }
+
+    .pricing-card {
+      border-radius: 24px; padding: 36px;
+      position: relative; overflow: hidden;
+    }
+    .pricing-card.weekly {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .pricing-card.monthly {
+      background: linear-gradient(135deg, #1A2F6B, #0f1e4a);
+      border: 1px solid rgba(26,86,219,0.4);
+    }
+    .pricing-card.monthly::before {
+      content: 'Best Value';
+      position: absolute; top: 20px; right: 20px;
+      background: var(--gold); color: var(--black);
+      padding: 4px 14px; border-radius: 50px;
+      font-size: 12px; font-weight: 700;
+    }
+    .pricing-icon { font-size: 32px; margin-bottom: 16px; }
+    .pricing-name { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+    .pricing-price { font-size: 42px; font-weight: 900; color: var(--gold); margin-bottom: 4px; }
+    .pricing-price span { font-size: 16px; font-weight: 500; color: var(--gray); }
+    .pricing-desc { font-size: 14px; color: var(--gray); line-height: 1.7; }
+    .pricing-feature {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; color: var(--gray); margin-top: 12px;
+    }
+    .pricing-feature i { color: var(--gold); font-size: 13px; }
+
+    /* ── CTA ── */
+    .cta-section {
+      margin: 0 5% 100px;
+      background: linear-gradient(135deg, #1A2F6B 0%, #0a1628 100%);
+      border: 1px solid rgba(26,86,219,0.3);
+      border-radius: 28px; padding: 80px 60px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: rgba(212,175,55,0.08);
+    }
+    .cta-section h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 900; margin-bottom: 16px; }
+    .cta-section p { color: var(--gray); font-size: 17px; margin-bottom: 36px; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark2);
+      border-top: 1px solid rgba(212,175,55,0.1);
+      padding: 60px 5% 30px;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px; margin-bottom: 48px;
+    }
+    .footer-brand p { color: var(--gray); font-size: 14px; line-height: 1.8; margin-top: 16px; max-width: 280px; }
+    .footer-col h4 { font-size: 14px; font-weight: 700; color: var(--gold); margin-bottom: 16px; letter-spacing: 0.5px; }
+    .footer-col a {
+      display: block; color: var(--gray); text-decoration: none;
+      font-size: 14px; margin-bottom: 10px; transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 24px; display: flex;
+      justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-bottom p { font-size: 13px; color: var(--gray); }
+    .footer-socials { display: flex; gap: 12px; }
+    .footer-social {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--dark3); color: var(--gray);
+      display: flex; align-items: center; justify-content: center;
+      text-decoration: none; font-size: 14px; transition: background 0.2s, color 0.2s;
+    }
+    .footer-social:hover { background: var(--gold); color: var(--black); }
+
+    /* ── MOBILE NAV ── */
+    .mobile-menu {
+      display: none; position: fixed; inset: 0; z-index: 99;
+      background: rgba(10,10,10,0.98);
+      flex-direction: column; align-items: center; justify-content: center; gap: 32px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      color: var(--white); text-decoration: none; font-size: 24px; font-weight: 700;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+    .mobile-close {
+      position: absolute; top: 24px; right: 5%;
+      background: none; border: none; color: var(--white);
+      font-size: 28px; cursor: pointer;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .nav-hamburger { display: block; }
+      .hero { padding: 100px 5% 80px; }
+      .hero-stats { gap: 24px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .cta-section { padding: 60px 28px; }
+    }
+    @media (max-width: 480px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .hero-btns { flex-direction: column; }
+      .btn-primary, .btn-secondary { justify-content: center; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon"><i class="fa-solid fa-bus"></i></div>
+      <span class="nav-logo-text">Safiri<span>Pay</span></span>
+    </a>
+
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#companies">Companies</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </div>
+
+    <a href="login.html" class="nav-cta">Sign in</a>
+    <button class="nav-hamburger" onclick="openMenu()">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </nav>
+
+  <!-- MOBILE MENU -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" onclick="closeMenu()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <a href="#how" onclick="closeMenu()">How it works</a>
+    <a href="#companies" onclick="closeMenu()">Companies</a>
+    <a href="#pricing" onclick="closeMenu()">Pricing</a>
+    <a href="register.html" onclick="closeMenu()">Get Started</a>
+    <a href="login.html" onclick="closeMenu()">Sign in</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-bg">
+      <div class="hero-bg-slide active"></div>
+      <div class="hero-bg-slide"></div>
+      <div class="hero-bg-slide"></div>
+      <div class="hero-overlay"></div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-badge">
+        <i class="fa-solid fa-bolt"></i>
+        Kenya's Smart Transit Payment Platform
+      </div>
+
+      <h1 class="hero-title">
+        Board smarter.<br>
+        <span class="line2">Pay faster.</span><br>
+        <span class="line3">Travel better.</span>
+      </h1>
+
+      <p class="hero-sub">
+        SafiriPay lets you pay for your matatu subscription digitally,
+        get a QR ticket instantly, and board without cash — ever again.
+      </p>
+
+      <div class="hero-btns">
+        <a href="register.html" class="btn-primary">
+          <i class="fa-solid fa-rocket"></i> Get Started Free
+        </a>
+        <a href="#how" class="btn-secondary">
+          <i class="fa-solid fa-play"></i> How it works
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num">3+</div>
+          <div class="hero-stat-label">Companies on board</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">24/7</div>
+          <div class="hero-stat-label">Ticket access</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">KES 20</div>
+          <div class="hero-stat-label">Per transaction only</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-dots">
+      <button class="hero-dot active" onclick="goSlide(0)"></button>
+      <button class="hero-dot" onclick="goSlide(1)"></button>
+      <button class="hero-dot" onclick="goSlide(2)"></button>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" id="how">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">Six steps to cashless travel</h2>
+    <p class="section-sub">From registration to boarding — the whole journey takes less than 3 minutes.</p>
+
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-step-num">1</div>
+        <div class="how-icon blue"><i class="fa-solid fa-user-plus"></i></div>
+        <h3>Create account</h3>
+        <p>Register with your name, email and phone number. Takes 60 seconds.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step-num">2</div>
+        <div class="how-icon gold"><i class="fa-solid fa-bus"></i></div>
+        <h3>Choose company</h3>
+        <p>Pick your transport company — SuperMetro, City Shuttle, Latema Travellers, and more.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step-num">3</div>
+        <div class="how-icon teal"><i class="fa-solid fa-route"></i></div>
+        <h3>Pick your route</h3>
+        <p>Search or select your route. To and fro fares are set separately — you see exactly what you pay.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step-num">4</div>
+        <div class="how-icon purple"><i class="fa-solid fa-calendar"></i></div>
+        <h3>Choose subscription</h3>
+        <p>Weekly or monthly. One price covers both directions — to and fro.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step-num">5</div>
+        <div class="how-icon green"><i class="fa-solid fa-mobile-screen"></i></div>
+        <h3>Pay via M-Pesa</h3>
+        <p>A prompt appears on your phone. Enter your PIN. Done. Secure and instant.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step-num">6</div>
+        <div class="how-icon gold"><i class="fa-solid fa-qrcode"></i></div>
+        <h3>Board with QR</h3>
+        <p>Your QR ticket is ready immediately. Show it to the conductor — they scan and you board.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPANIES -->
+  <section class="companies-section" id="companies">
+    <div class="section-label">Transport companies</div>
+    <h2 class="section-title">Choose your company</h2>
+    <p class="section-sub">Growing network of Nairobi's most trusted matatu companies.</p>
+
+    <div class="companies-grid">
+      <a href="register.html" class="company-card">
+        <div class="company-logo sm">SM</div>
+        <div>
+          <div class="company-name">SuperMetro</div>
+          <div class="company-routes">Nairobi CBD · Westlands · Ngong Road</div>
+        </div>
+        <div class="company-tag">✓ Active</div>
+        <div class="company-arrow">Select this company <i class="fa-solid fa-arrow-right"></i></div>
+      </a>
+
+      <a href="register.html" class="company-card">
+        <div class="company-logo cs">CS</div>
+        <div>
+          <div class="company-name">City Shuttle</div>
+          <div class="company-routes">CBD · Thika Road · Kasarani</div>
+        </div>
+        <div class="company-tag">✓ Active</div>
+        <div class="company-arrow">Select this company <i class="fa-solid fa-arrow-right"></i></div>
+      </a>
+
+      <a href="register.html" class="company-card">
+        <div class="company-logo lt">LT</div>
+        <div>
+          <div class="company-name">Latema Travellers</div>
+          <div class="company-routes">CBD · Eastlands · Embakasi</div>
+        </div>
+        <div class="company-tag">✓ Active</div>
+        <div class="company-arrow">Select this company <i class="fa-solid fa-arrow-right"></i></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing-section" id="pricing">
+    <div class="section-label">Subscription plans</div>
+    <h2 class="section-title">Simple, fair pricing</h2>
+    <p class="section-sub">Fares are set by each company. You only pay a small SafiriPay service fee of KES 20 per transaction.</p>
+
+    <div class="pricing-grid">
+      <div class="pricing-card weekly">
+        <div class="pricing-icon">📅</div>
+        <div class="pricing-name">Weekly Pass</div>
+        <div class="pricing-price">KES 500 <span>/ week</span></div>
+        <p class="pricing-desc">7 days unlimited rides on your chosen route.</p>
+        <div class="pricing-feature"><i class="fa-solid fa-check"></i> To & Fro included</div>
+        <div class="pricing-feature"><i class="fa-solid fa-check"></i> Instant QR ticket</div>
+        <div class="pricing-feature"><i class="fa-solid fa-check"></i> Email reminder on expiry</div>
+      </div>
+
+      <div class="pricing-card monthly">
+        <div class="pricing-icon">⭐</div>
+        <div class="pricing-name">Monthly Pass</div>
+        <div class="pricing-price">KES 2000 <span>/ month</span></div>
+        <p class="pricing-desc">30 days unlimited rides. Best value for daily commuters.</p>
+        <div class="pricing-feature"><i class="fa-solid fa-check"></i> To & Fro included</div>
+        <div class="pricing-feature"><i class="fa-solid fa-check"></i> Instant QR ticket</div>
+        <div class="pricing-feature"><i class="fa-solid fa-check"></i> Email reminder on expiry</div>
+        <div class="pricing-feature"><i class="fa-solid fa-check"></i> Priority support</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section" id="contact">
+    <h2>Ready to ditch the cash?</h2>
+    <p>Join SafiriPay today. Register free, pick your route, and board smarter.</p>
+    <a href="register.html" class="btn-primary" style="display:inline-flex;">
+      <i class="fa-solid fa-rocket"></i> Create your account
+    </a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="text-decoration:none;">
+          <div class="nav-logo-icon"><i class="fa-solid fa-bus"></i></div>
+          <span class="nav-logo-text">Safiri<span>Pay</span></span>
+        </a>
+        <p>Smart transit payments for every Kenyan commuter. Board without cash, travel without stress.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#how">How it works</a>
+        <a href="#companies">Companies</a>
+        <a href="#pricing">Pricing</a>
+        <a href="register.html">Get started</a>
+      </div>
+      <div class="footer-col">
+        <h4>For companies</h4>
+        <a href="admin/login.html">Admin login</a>
+        <a href="#">Join as operator</a>
+        <a href="#">Conductor portal</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <a href="mailto:hello@safiripay.co.ke">hello@safiripay.co.ke</a>
+        <a href="tel:+254700000000">+254 700 000 000</a>
+        <a href="#">Nairobi, Kenya</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 SafiriPay — Smart Transit for Every Kenyan</p>
+      <div class="footer-socials">
+        <a href="#" class="footer-social"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" class="footer-social"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" class="footer-social"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#" class="footer-social"><i class="fa-brands fa-whatsapp"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Hero slideshow
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.hero-bg-slide');
+    const dots = document.querySelectorAll('.hero-dot');
+
+    function goSlide(n) {
+      slides[currentSlide].classList.remove('active');
+      dots[currentSlide].classList.remove('active');
+      currentSlide = n;
+      slides[currentSlide].classList.add('active');
+      dots[currentSlide].classList.add('active');
+    }
+
+    setInterval(() => {
+      goSlide((currentSlide + 1) % slides.length);
+    }, 4000);
+
+    // Mobile menu
+    function openMenu() { document.getElementById('mobileMenu').classList.add('open'); }
+    function closeMenu() { document.getElementById('mobileMenu').classList.remove('open'); }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+  </script>
+
+</body>
+</html>

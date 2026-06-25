@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SafiriPay — Create Account</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black:      #0a0a0a;
+      --blue:       #1A56DB;
+      --blue-light: #3B82F6;
+      --gold:       #D4AF37;
+      --gold-dark:  #a88a1c;
+      --white:      #F1F5F9;
+      --gray:       #94a3b8;
+      --dark2:      #111827;
+      --dark3:      #1f2937;
+      --error:      #ef4444;
+      --success:    #22c55e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212,175,55,0.15);
+      padding: 0 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px; flex-shrink: 0;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: white;
+    }
+    .nav-logo-text { font-size: 20px; font-weight: 800; color: var(--white); }
+    .nav-logo-text span { color: var(--gold); }
+    .nav-back {
+      color: var(--gray); text-decoration: none; font-size: 14px;
+      display: flex; align-items: center; gap: 8px;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--gold); }
+
+    /* ── MAIN LAYOUT ── */
+    .page {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(100vh - 68px);
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel {
+      background: linear-gradient(145deg, #0a1628 0%, #111827 60%, #0a0a0a 100%);
+      padding: 60px 50px;
+      display: flex; flex-direction: column; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .left-panel::before {
+      content: '';
+      position: absolute; top: -80px; right: -80px;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: rgba(26,86,219,0.1);
+    }
+    .left-panel::after {
+      content: '';
+      position: absolute; bottom: -60px; left: -60px;
+      width: 220px; height: 220px; border-radius: 50%;
+      background: rgba(212,175,55,0.06);
+    }
+
+    .left-content { position: relative; z-index: 2; }
+
+    .left-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.25);
+      color: var(--gold); padding: 6px 16px; border-radius: 50px;
+      font-size: 12px; font-weight: 600; margin-bottom: 32px;
+    }
+
+    .left-title {
+      font-size: clamp(28px, 3vw, 42px);
+      font-weight: 900; line-height: 1.1; margin-bottom: 20px;
+    }
+    .left-title span { color: var(--gold); }
+
+    .left-sub {
+      color: var(--gray); font-size: 15px; line-height: 1.8;
+      margin-bottom: 48px;
+    }
+
+    .left-features { display: flex; flex-direction: column; gap: 20px; }
+    .left-feature {
+      display: flex; align-items: flex-start; gap: 16px;
+    }
+    .left-feature-icon {
+      width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .left-feature-icon.blue { background: rgba(26,86,219,0.2); color: var(--blue-light); }
+    .left-feature-icon.gold { background: rgba(212,175,55,0.15); color: var(--gold); }
+    .left-feature-icon.green { background: rgba(34,197,94,0.15); color: var(--success); }
+
+    .left-feature-text h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .left-feature-text p { font-size: 13px; color: var(--gray); line-height: 1.6; }
+
+    /* ── RIGHT PANEL (FORM) ── */
+    .right-panel {
+      background: var(--dark2);
+      padding: 60px 50px;
+      display: flex; flex-direction: column; justify-content: center;
+      border-left: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .form-header { margin-bottom: 36px; }
+    .form-header h2 { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+    .form-header p { color: var(--gray); font-size: 15px; }
+    .form-header p a { color: var(--gold); text-decoration: none; font-weight: 600; }
+    .form-header p a:hover { text-decoration: underline; }
+
+    /* Progress steps */
+    .form-steps {
+      display: flex; align-items: center; gap: 0;
+      margin-bottom: 36px;
+    }
+    .form-step {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .form-step-circle {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+      transition: all 0.3s;
+    }
+    .form-step-circle.active { background: var(--gold); color: var(--black); }
+    .form-step-circle.done { background: var(--success); color: white; }
+    .form-step-circle.inactive { background: var(--dark3); color: var(--gray); border: 1px solid rgba(255,255,255,0.1); }
+    .form-step-label { font-size: 12px; color: var(--gray); font-weight: 500; }
+    .form-step-label.active { color: var(--gold); }
+    .form-step-divider { flex: 1; height: 1px; background: rgba(255,255,255,0.08); margin: 0 12px; }
+
+    /* Form */
+    .form { display: flex; flex-direction: column; gap: 20px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field label {
+      font-size: 13px; font-weight: 600; color: var(--white);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .field label i { color: var(--gold); font-size: 11px; }
+
+    .input-wrap { position: relative; }
+    .input-wrap i.input-icon {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      color: var(--gray); font-size: 14px; pointer-events: none;
+      transition: color 0.2s;
+    }
+    .input-wrap input,
+    .input-wrap select {
+      width: 100%;
+      background: var(--dark3);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--white);
+      padding: 14px 16px 14px 44px;
+      border-radius: 14px;
+      font-size: 15px;
+      transition: border-color 0.2s, background 0.2s;
+      outline: none;
+      appearance: none;
+    }
+    .input-wrap input::placeholder { color: var(--gray); font-size: 14px; }
+    .input-wrap input:focus,
+    .input-wrap select:focus {
+      border-color: var(--blue);
+      background: #1a2234;
+    }
+    .input-wrap input:focus + i.input-icon,
+    .input-wrap:focus-within i.input-icon { color: var(--blue-light); }
+
+    .input-wrap input.error-input { border-color: var(--error); }
+    .input-wrap input.success-input { border-color: var(--success); }
+
+    /* Password toggle */
+    .input-wrap .toggle-pw {
+      position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+      color: var(--gray); cursor: pointer; font-size: 14px;
+      background: none; border: none;
+      transition: color 0.2s;
+    }
+    .input-wrap .toggle-pw:hover { color: var(--gold); }
+
+    /* Field error/hint */
+    .field-msg {
+      font-size: 12px; display: flex; align-items: center; gap: 6px;
+      min-height: 16px;
+    }
+    .field-msg.error { color: var(--error); }
+    .field-msg.success { color: var(--success); }
+    .field-msg.hint { color: var(--gray); }
+
+    /* Password strength */
+    .pw-strength { margin-top: 8px; }
+    .pw-strength-bar {
+      height: 4px; border-radius: 2px;
+      background: var(--dark3); overflow: hidden; margin-bottom: 6px;
+    }
+    .pw-strength-fill {
+      height: 100%; border-radius: 2px;
+      transition: width 0.3s, background 0.3s;
+      width: 0%;
+    }
+    .pw-strength-label { font-size: 11px; color: var(--gray); }
+
+    /* Terms */
+    .terms-row {
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .terms-row input[type="checkbox"] {
+      width: 18px; height: 18px; accent-color: var(--gold);
+      flex-shrink: 0; margin-top: 2px; cursor: pointer;
+    }
+    .terms-row label {
+      font-size: 13px; color: var(--gray); line-height: 1.6; cursor: pointer;
+    }
+    .terms-row label a { color: var(--gold); text-decoration: none; }
+    .terms-row label a:hover { text-decoration: underline; }
+
+    /* Submit button */
+    .btn-submit {
+      background: var(--gold); color: var(--black);
+      padding: 16px; border-radius: 14px;
+      font-weight: 800; font-size: 16px;
+      border: none; cursor: pointer; width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(212,175,55,0.25);
+    }
+    .btn-submit:hover:not(:disabled) {
+      background: var(--gold-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(212,175,55,0.35);
+    }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Spinner */
+    .spinner {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: var(--black);
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--gray); font-size: 13px;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: var(--dark3); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--white); padding: 14px 24px; border-radius: 14px;
+      font-size: 14px; font-weight: 500;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 999; white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: rgba(34,197,94,0.3); }
+    .toast.error { border-color: rgba(239,68,68,0.3); }
+    .toast i { font-size: 16px; }
+    .toast.success i { color: var(--success); }
+    .toast.error i { color: var(--error); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .page { grid-template-columns: 1fr; }
+      .left-panel { display: none; }
+      .right-panel { padding: 40px 28px; }
+    }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+      .right-panel { padding: 32px 20px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="../index.html" class="nav-logo">
+      <div class="nav-logo-icon"><i class="fa-solid fa-bus"></i></div>
+      <span class="nav-logo-text">Safiri<span>Pay</span></span>
+    </a>
+    <a href="../index.html" class="nav-back">
+      <i class="fa-solid fa-arrow-left"></i> Back to home
+    </a>
+  </nav>
+
+  <!-- PAGE -->
+  <div class="page">
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <div class="left-content">
+
+        <div class="left-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+          Secure Registration
+        </div>
+
+        <h2 class="left-title">
+          Join thousands of<br>
+          <span>smart commuters</span><br>
+          across Nairobi.
+        </h2>
+
+        <p class="left-sub">
+          Create your SafiriPay account in under a minute.
+          Pay once, board all week — or all month.
+          No cash. No queues.
+        </p>
+
+        <div class="left-features">
+          <div class="left-feature">
+            <div class="left-feature-icon blue">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="left-feature-text">
+              <h4>Instant QR ticket</h4>
+              <p>Your digital pass is ready the moment payment goes through.</p>
+            </div>
+          </div>
+
+          <div class="left-feature">
+            <div class="left-feature-icon gold">
+              <i class="fa-solid fa-mobile-screen"></i>
+            </div>
+            <div class="left-feature-text">
+              <h4>Pay via M-Pesa</h4>
+              <p>STK push straight to your phone. Enter PIN — done.</p>
+            </div>
+          </div>
+
+          <div class="left-feature">
+            <div class="left-feature-icon green">
+              <i class="fa-solid fa-envelope"></i>
+            </div>
+            <div class="left-feature-text">
+              <h4>Expiry reminders</h4>
+              <p>We email you before your pass expires so you never get stranded.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+
+      <div class="form-header">
+        <h2>Create your account</h2>
+        <p>Already have an account? <a href="login.html">Sign in here</a></p>
+      </div>
+
+      <!-- STEPS INDICATOR -->
+      <div class="form-steps">
+        <div class="form-step">
+          <div class="form-step-circle active" id="step1-circle">1</div>
+          <span class="form-step-label active" id="step1-label">Your details</span>
+        </div>
+        <div class="form-step-divider"></div>
+        <div class="form-step">
+          <div class="form-step-circle inactive" id="step2-circle">2</div>
+          <span class="form-step-label" id="step2-label">Choose company</span>
+        </div>
+        <div class="form-step-divider"></div>
+        <div class="form-step">
+          <div class="form-step-circle inactive" id="step3-circle">3</div>
+          <span class="form-step-label" id="step3-label">Pick route</span>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <form class="form" id="registerForm" novalidate>
+
+        <!-- NAME ROW -->
+        <div class="form-row">
+          <div class="field">
+            <label><i class="fa-solid fa-circle-dot"></i> First name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user input-icon"></i>
+              <input type="text" id="firstName" placeholder="e.g. Abigael" autocomplete="given-name"/>
+            </div>
+            <div class="field-msg hint" id="firstName-msg"></div>
+          </div>
+
+          <div class="field">
+            <label><i class="fa-solid fa-circle-dot"></i> Last name</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-user input-icon"></i>
+              <input type="text" id="lastName" placeholder="e.g. Mwangi" autocomplete="family-name"/>
+            </div>
+            <div class="field-msg hint" id="lastName-msg"></div>
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="field">
+          <label><i class="fa-solid fa-circle-dot"></i> Email address</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-envelope input-icon"></i>
+            <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
+          </div>
+          <div class="field-msg hint" id="email-msg">We'll send your ticket and reminders here.</div>
+        </div>
+
+        <!-- PHONE -->
+        <div class="field">
+          <label><i class="fa-solid fa-circle-dot"></i> Phone number (M-Pesa)</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-phone input-icon"></i>
+            <input type="tel" id="phone" placeholder="07XX XXX XXX" autocomplete="tel" maxlength="12"/>
+          </div>
+          <div class="field-msg hint" id="phone-msg">This is the number that will receive the M-Pesa prompt.</div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="field">
+          <label><i class="fa-solid fa-circle-dot"></i> Password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="password" placeholder="Create a strong password" autocomplete="new-password"/>
+            <button type="button" class="toggle-pw" onclick="togglePw('password', this)">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <div class="pw-strength" id="pw-strength" style="display:none;">
+            <div class="pw-strength-bar">
+              <div class="pw-strength-fill" id="pw-fill"></div>
+            </div>
+            <span class="pw-strength-label" id="pw-label"></span>
+          </div>
+          <div class="field-msg hint" id="password-msg">Minimum 8 characters.</div>
+        </div>
+
+        <!-- CONFIRM PASSWORD -->
+        <div class="field">
+          <label><i class="fa-solid fa-circle-dot"></i> Confirm password</label>
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="confirmPassword" placeholder="Repeat your password" autocomplete="new-password"/>
+            <button type="button" class="toggle-pw" onclick="togglePw('confirmPassword', this)">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+          <div class="field-msg hint" id="confirmPassword-msg"></div>
+        </div>
+
+        <!-- TERMS -->
+        <div class="terms-row">
+          <input type="checkbox" id="terms"/>
+          <label for="terms">
+            I agree to SafiriPay's <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+            I understand my M-Pesa number will be used for payments.
+          </label>
+        </div>
+        <div class="field-msg error" id="terms-msg"></div>
+
+        <!-- SUBMIT -->
+        <button type="submit" class="btn-submit" id="submitBtn">
+          <div class="spinner" id="spinner"></div>
+          <i class="fa-solid fa-rocket" id="submitIcon"></i>
+          <span id="submitText">Create my account</span>
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toast-msg">Account created!</span>
+  </div>
+
+  <script>
+    // ── PASSWORD TOGGLE ──
+    function togglePw(id, btn) {
+      const input = document.getElementById(id);
+      const icon = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+      }
+    }
+
+    // ── PASSWORD STRENGTH ──
+    const pwInput = document.getElementById('password');
+    const pwStrength = document.getElementById('pw-strength');
+    const pwFill = document.getElementById('pw-fill');
+    const pwLabel = document.getElementById('pw-label');
+
+    pwInput.addEventListener('input', () => {
+      const val = pwInput.value;
+      if (!val) { pwStrength.style.display = 'none'; return; }
+      pwStrength.style.display = 'block';
+
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      const levels = [
+        { w: '20%', color: '#ef4444', label: 'Too weak' },
+        { w: '40%', color: '#f97316', label: 'Weak' },
+        { w: '65%', color: '#eab308', label: 'Fair' },
+        { w: '85%', color: '#84cc16', label: 'Good' },
+        { w: '100%', color: '#22c55e', label: 'Strong 💪' },
+      ];
+      const lvl = levels[Math.min(score, 4)];
+      pwFill.style.width = lvl.w;
+      pwFill.style.background = lvl.color;
+      pwLabel.textContent = lvl.label;
+      pwLabel.style.color = lvl.color;
+    });
+
+    // ── REAL-TIME VALIDATION ──
+    function setMsg(id, msg, type) {
+      const el = document.getElementById(id + '-msg');
+      if (!el) return;
+      el.textContent = msg;
+      el.className = 'field-msg ' + type;
+    }
+    function setInputState(id, state) {
+      const input = document.getElementById(id);
+      if (!input) return;
+      input.classList.remove('error-input', 'success-input');
+      if (state === 'error') input.classList.add('error-input');
+      if (state === 'success') input.classList.add('success-input');
+    }
+
+    document.getElementById('firstName').addEventListener('blur', function() {
+      if (!this.value.trim()) {
+        setMsg('firstName', 'First name is required.', 'error');
+        setInputState('firstName', 'error');
+      } else {
+        setMsg('firstName', '', 'hint');
+        setInputState('firstName', 'success');
+      }
+    });
+
+    document.getElementById('lastName').addEventListener('blur', function() {
+      if (!this.value.trim()) {
+        setMsg('lastName', 'Last name is required.', 'error');
+        setInputState('lastName', 'error');
+      } else {
+        setMsg('lastName', '', 'hint');
+        setInputState('lastName', 'success');
+      }
+    });
+
+    document.getElementById('email').addEventListener('blur', function() {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.value) {
+        setMsg('email', 'Email is required.', 'error');
+        setInputState('email', 'error');
+      } else if (!re.test(this.value)) {
+        setMsg('email', 'Enter a valid email address.', 'error');
+        setInputState('email', 'error');
+      } else {
+        setMsg('email', 'We\'ll send your ticket and reminders here.', 'success');
+        setInputState('email', 'success');
+      }
+    });
+
+    document.getElementById('phone').addEventListener('blur', function() {
+      const val = this.value.replace(/\s/g, '');
+      const re = /^(07|01|\+2547|\+2541)[0-9]{8}$/;
+      if (!val) {
+        setMsg('phone', 'Phone number is required.', 'error');
+        setInputState('phone', 'error');
+      } else if (!re.test(val)) {
+        setMsg('phone', 'Enter a valid Kenyan number e.g. 0712345678.', 'error');
+        setInputState('phone', 'error');
+      } else {
+        setMsg('phone', 'This is the number that will receive the M-Pesa prompt.', 'success');
+        setInputState('phone', 'success');
+      }
+    });
+
+    document.getElementById('confirmPassword').addEventListener('input', function() {
+      const pw = document.getElementById('password').value;
+      if (!this.value) {
+        setMsg('confirmPassword', '', 'hint');
+        setInputState('confirmPassword', '');
+      } else if (this.value !== pw) {
+        setMsg('confirmPassword', 'Passwords do not match.', 'error');
+        setInputState('confirmPassword', 'error');
+      } else {
+        setMsg('confirmPassword', 'Passwords match ✓', 'success');
+        setInputState('confirmPassword', 'success');
+      }
+    });
+
+    // ── TOAST ──
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      const icon = toast.querySelector('i');
+      toastMsg.textContent = msg;
+      toast.className = 'toast ' + type;
+      icon.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // ── FORM SUBMIT ──
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName  = document.getElementById('lastName').value.trim();
+      const email     = document.getElementById('email').value.trim();
+      const phone     = document.getElementById('phone').value.trim();
+      const password  = document.getElementById('password').value;
+      const confirm   = document.getElementById('confirmPassword').value;
+      const terms     = document.getElementById('terms').checked;
+
+      let valid = true;
+
+      if (!firstName) { setMsg('firstName', 'First name is required.', 'error'); setInputState('firstName','error'); valid = false; }
+      if (!lastName)  { setMsg('lastName', 'Last name is required.', 'error'); setInputState('lastName','error'); valid = false; }
+
+      const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRe.test(email)) {
+        setMsg('email', 'Enter a valid email address.', 'error'); setInputState('email','error'); valid = false;
+      }
+
+      const phoneRe = /^(07|01|\+2547|\+2541)[0-9]{8}$/;
+      if (!phone || !phoneRe.test(phone.replace(/\s/g,''))) {
+        setMsg('phone', 'Enter a valid Kenyan number e.g. 0712345678.', 'error'); setInputState('phone','error'); valid = false;
+      }
+
+      if (password.length < 8) {
+        setMsg('password', 'Password must be at least 8 characters.', 'error'); setInputState('password','error'); valid = false;
+      }
+
+      if (password !== confirm) {
+        setMsg('confirmPassword', 'Passwords do not match.', 'error'); setInputState('confirmPassword','error'); valid = false;
+      }
+
+      if (!terms) {
+        document.getElementById('terms-msg').textContent = 'You must agree to the terms to continue.';
+        valid = false;
+      } else {
+        document.getElementById('terms-msg').textContent = '';
+      }
+
+      if (!valid) {
+        showToast('Please fix the errors above.', 'error');
+        return;
+      }
+
+      // ── LOADING STATE ──
+      const btn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('spinner');
+      const icon = document.getElementById('submitIcon');
+      const text = document.getElementById('submitText');
+
+      btn.disabled = true;
+      spinner.style.display = 'block';
+      icon.style.display = 'none';
+      text.textContent = 'Creating your account…';
+
+      // ── SAVE TO localStorage (Firebase goes here) ──
+      // TODO: Replace this block with Firebase Auth createUserWithEmailAndPassword()
+      await new Promise(r => setTimeout(r, 1800)); // simulate network
+
+      const user = { firstName, lastName, email, phone, createdAt: new Date().toISOString() };
+      localStorage.setItem('safiriUser', JSON.stringify(user));
+
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      icon.style.display = 'inline';
+      text.textContent = 'Create my account';
+
+      showToast('Account created! Taking you to choose your company…', 'success');
+
+      // Advance steps indicator
+      document.getElementById('step1-circle').className = 'form-step-circle done';
+      document.getElementById('step1-circle').innerHTML = '<i class="fa-solid fa-check" style="font-size:11px;"></i>';
+      document.getElementById('step2-circle').className = 'form-step-circle active';
+      document.getElementById('step2-label').className = 'form-step-label active';
+
+      setTimeout(() => {
+        window.location.href = '../app/companies.html';
+      }, 2000);
+    });
+  </script>
+
+</body>
+</html>
