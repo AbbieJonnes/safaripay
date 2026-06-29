@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SafiriPay — Choose Your Company</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black:      #0a0a0a;
+      --blue:       #1A56DB;
+      --blue-light: #3B82F6;
+      --gold:       #D4AF37;
+      --gold-dark:  #a88a1c;
+      --white:      #F1F5F9;
+      --gray:       #94a3b8;
+      --dark2:      #111827;
+      --dark3:      #1f2937;
+      --success:    #22c55e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      background: rgba(10,10,10,0.97);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212,175,55,0.15);
+      padding: 0 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px; position: sticky; top: 0; z-index: 100;
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: white;
+    }
+    .nav-logo-text { font-size: 20px; font-weight: 800; color: var(--white); }
+    .nav-logo-text span { color: var(--gold); }
+
+    /* User info + logout */
+    .nav-right {
+      display: flex; align-items: center; gap: 14px;
+    }
+
+    .nav-user {
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .nav-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; color: white;
+      border: 2px solid rgba(212,175,55,0.3);
+      flex-shrink: 0;
+    }
+
+    .nav-username {
+      font-size: 14px; font-weight: 600; color: var(--white);
+    }
+    .nav-username span {
+      display: block; font-size: 11px; color: var(--gray); font-weight: 400;
+    }
+
+    .btn-logout {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: #f87171; padding: 8px 16px; border-radius: 50px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      text-decoration: none;
+    }
+    .btn-logout:hover {
+      background: rgba(239,68,68,0.2);
+      border-color: rgba(239,68,68,0.4);
+    }
+
+    /* ── WELCOME BANNER ── */
+    .welcome-banner {
+      background: linear-gradient(135deg, #0a1628, #111827);
+      border-bottom: 1px solid rgba(212,175,55,0.1);
+      padding: 32px 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 16px;
+    }
+
+    .welcome-text h2 {
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 900; margin-bottom: 6px;
+    }
+    .welcome-text h2 span { color: var(--gold); }
+    .welcome-text p { color: var(--gray); font-size: 14px; }
+
+    .welcome-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.2);
+      color: var(--success); padding: 8px 18px; border-radius: 50px;
+      font-size: 13px; font-weight: 600;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main { padding: 50px 5%; max-width: 1100px; margin: 0 auto; }
+
+    .section-top {
+      display: flex; align-items: flex-end;
+      justify-content: space-between; flex-wrap: wrap;
+      gap: 16px; margin-bottom: 36px;
+    }
+
+    .section-label {
+      display: inline-block;
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.25);
+      color: var(--gold); padding: 5px 16px; border-radius: 50px;
+      font-size: 12px; font-weight: 600; margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 900; margin-bottom: 6px;
+    }
+
+    .section-sub { color: var(--gray); font-size: 15px; }
+
+    /* Search bar */
+    .search-wrap {
+      position: relative; width: 280px;
+    }
+    .search-wrap i {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--gray); font-size: 14px;
+    }
+    .search-wrap input {
+      width: 100%;
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--white); padding: 12px 16px 12px 40px;
+      border-radius: 50px; font-size: 14px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-wrap input::placeholder { color: var(--gray); }
+    .search-wrap input:focus { border-color: var(--gold); }
+
+    /* Companies grid */
+    .companies-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .company-card {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 22px; padding: 28px;
+      cursor: pointer;
+      transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+      text-decoration: none; color: inherit;
+      display: flex; flex-direction: column; gap: 16px;
+      position: relative; overflow: hidden;
+    }
+    .company-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--blue), var(--gold));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .company-card:hover {
+      border-color: rgba(212,175,55,0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .company-card:hover::before { opacity: 1; }
+
+    .company-card-top {
+      display: flex; align-items: center; gap: 16px;
+    }
+
+    .company-logo {
+      width: 56px; height: 56px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900; flex-shrink: 0;
+    }
+    .company-logo.sm { background: rgba(26,86,219,0.2); color: var(--blue-light); }
+    .company-logo.cs { background: rgba(212,175,55,0.15); color: var(--gold); }
+    .company-logo.lt { background: rgba(34,197,94,0.15); color: var(--success); }
+
+    .company-info { flex: 1; min-width: 0; }
+    .company-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+    .company-tagline { font-size: 13px; color: var(--gray); }
+
+    .company-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.2);
+      color: var(--success); padding: 4px 12px; border-radius: 50px;
+      font-size: 12px; font-weight: 600; align-self: flex-start;
+    }
+    .company-status i { font-size: 8px; }
+
+    .company-routes-label {
+      font-size: 12px; color: var(--gray); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .company-routes-list {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+
+    .route-tag {
+      background: var(--dark3);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--gray); padding: 4px 10px; border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .company-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 14px; margin-top: 4px;
+    }
+
+    .company-meta {
+      display: flex; gap: 16px;
+    }
+    .company-meta-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--gray);
+    }
+    .company-meta-item i { color: var(--gold); font-size: 11px; }
+
+    .company-select-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--gold); color: var(--black);
+      padding: 8px 18px; border-radius: 50px;
+      font-size: 13px; font-weight: 700;
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .company-select-btn:hover { background: var(--gold-dark); transform: scale(1.03); }
+
+    /* No results */
+    .no-results {
+      text-align: center; padding: 60px 20px;
+      color: var(--gray); display: none;
+    }
+    .no-results i { font-size: 48px; margin-bottom: 16px; color: var(--dark3); }
+    .no-results h3 { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .search-wrap { width: 100%; }
+      .section-top { flex-direction: column; align-items: flex-start; }
+      .nav-username { display: none; }
+      .welcome-banner { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon"><i class="fa-solid fa-bus"></i></div>
+      <span class="nav-logo-text">Safiri<span>Pay</span></span>
+    </a>
+
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="nav-avatar" id="navAvatar">AB</div>
+        <div class="nav-username">
+          <span id="navName">Abigael</span>
+          <span>Passenger</span>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- WELCOME BANNER -->
+  <div class="welcome-banner">
+    <div class="welcome-text">
+      <h2>Hi, <span id="bannerName">Abigael</span>! 👋</h2>
+      <p>Select your transport company to get started with your subscription.</p>
+    </div>
+    <div class="welcome-badge">
+      <i class="fa-solid fa-circle-check"></i>
+      Account active
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <div class="section-top">
+      <div>
+        <div class="section-label">Step 1 of 4</div>
+        <h2 class="section-title">Choose your company</h2>
+        <p class="section-sub">Pick the matatu company you travel with daily.</p>
+      </div>
+      <div class="search-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Search company…" oninput="filterCompanies()"/>
+      </div>
+    </div>
+
+    <!-- COMPANIES GRID -->
+    <div class="companies-grid" id="companiesGrid">
+
+      <!-- SUPERMETRO -->
+      <div class="company-card" onclick="selectCompany('SuperMetro', 'sm')">
+        <div class="company-card-top">
+          <div class="company-logo sm">SM</div>
+          <div class="company-info">
+            <div class="company-name">SuperMetro</div>
+            <div class="company-tagline">Nairobi's premium express service</div>
+          </div>
+        </div>
+        <div class="company-status">
+          <i class="fa-solid fa-circle"></i> Active
+        </div>
+        <div>
+          <div class="company-routes-label">Popular routes</div>
+          <div class="company-routes-list">
+            <span class="route-tag">CBD → Westlands</span>
+            <span class="route-tag">CBD → Ngong Rd</span>
+            <span class="route-tag">CBD → Karen</span>
+          </div>
+        </div>
+        <div class="company-card-footer">
+          <div class="company-meta">
+            <div class="company-meta-item">
+              <i class="fa-solid fa-route"></i> 8 routes
+            </div>
+            <div class="company-meta-item">
+              <i class="fa-solid fa-bus"></i> 120+ matatus
+            </div>
+          </div>
+          <button class="company-select-btn">
+            Select <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- CITY SHUTTLE -->
+      <div class="company-card" onclick="selectCompany('City Shuttle', 'cs')">
+        <div class="company-card-top">
+          <div class="company-logo cs">CS</div>
+          <div class="company-info">
+            <div class="company-name">City Shuttle</div>
+            <div class="company-tagline">Connecting Nairobi's key corridors</div>
+          </div>
+        </div>
+        <div class="company-status">
+          <i class="fa-solid fa-circle"></i> Active
+        </div>
+        <div>
+          <div class="company-routes-label">Popular routes</div>
+          <div class="company-routes-list">
+            <span class="route-tag">CBD → Thika Rd</span>
+            <span class="route-tag">CBD → Kasarani</span>
+            <span class="route-tag">CBD → Ruiru</span>
+          </div>
+        </div>
+        <div class="company-card-footer">
+          <div class="company-meta">
+            <div class="company-meta-item">
+              <i class="fa-solid fa-route"></i> 6 routes
+            </div>
+            <div class="company-meta-item">
+              <i class="fa-solid fa-bus"></i> 80+ matatus
+            </div>
+          </div>
+          <button class="company-select-btn">
+            Select <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- LATEMA TRAVELLERS -->
+      <div class="company-card" onclick="selectCompany('Latema Travellers', 'lt')">
+        <div class="company-card-top">
+          <div class="company-logo lt">LT</div>
+          <div class="company-info">
+            <div class="company-name">Latema Travellers</div>
+            <div class="company-tagline">Serving Eastlands since 2005</div>
+          </div>
+        </div>
+        <div class="company-status">
+          <i class="fa-solid fa-circle"></i> Active
+        </div>
+        <div>
+          <div class="company-routes-label">Popular routes</div>
+          <div class="company-routes-list">
+            <span class="route-tag">CBD → Eastlands</span>
+            <span class="route-tag">CBD → Embakasi</span>
+            <span class="route-tag">CBD → Kayole</span>
+          </div>
+        </div>
+        <div class="company-card-footer">
+          <div class="company-meta">
+            <div class="company-meta-item">
+              <i class="fa-solid fa-route"></i> 5 routes
+            </div>
+            <div class="company-meta-item">
+              <i class="fa-solid fa-bus"></i> 60+ matatus
+            </div>
+          </div>
+          <button class="company-select-btn">
+            Select <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- NO RESULTS -->
+    <div class="no-results" id="noResults">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <h3>No company found</h3>
+      <p>Try searching with a different name.</p>
+    </div>
+
+  </div>
+
+  <script>
+    // ── LOAD USER ──
+    const user = JSON.parse(localStorage.getItem('safariUser') || '{}');
+
+    if (user.firstName) {
+      const initials = (user.firstName[0] + (user.lastName ? user.lastName[0] : '')).toUpperCase();
+      document.getElementById('navAvatar').textContent = initials;
+      document.getElementById('navName').textContent = user.firstName;
+      document.getElementById('bannerName').textContent = user.firstName;
+    }
+
+    // ── SEARCH ──
+    function filterCompanies() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.company-card');
+      let visible = 0;
+
+      cards.forEach(card => {
+        const name = card.querySelector('.company-name').textContent.toLowerCase();
+        const routes = card.querySelector('.company-routes-list').textContent.toLowerCase();
+        if (name.includes(query) || routes.includes(query)) {
+          card.style.display = 'flex';
+          visible++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    // ── SELECT COMPANY ──
+    function selectCompany(name, code) {
+      // Save chosen company to localStorage
+      localStorage.setItem('safiriCompany', JSON.stringify({ name, code }));
+      // Go to routes page
+      window.location.href = 'routes.html';
+    }
+
+    // ── LOGOUT ──
+    function logout() {
+      localStorage.removeItem('safariUser');
+      localStorage.removeItem('safariCompany');
+      localStorage.removeItem('safariRoute');
+      localStorage.removeItem('safariPlan');
+      window.location.href = 'index.html';
+    }
+  </script>
+
+</body>
+</html>

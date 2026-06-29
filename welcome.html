@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SafariPay — Welcome!</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black:      #0a0a0a;
+      --blue:       #1A56DB;
+      --blue-light: #3B82F6;
+      --gold:       #D4AF37;
+      --gold-dark:  #a88a1c;
+      --white:      #F1F5F9;
+      --gray:       #94a3b8;
+      --dark2:      #111827;
+      --dark3:      #1f2937;
+      --success:    #22c55e;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Background blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .blob-1 { width: 400px; height: 400px; background: var(--blue); top: -100px; left: -100px; }
+    .blob-2 { width: 300px; height: 300px; background: var(--gold); bottom: -80px; right: -80px; }
+    .blob-3 { width: 200px; height: 200px; background: var(--blue-light); bottom: 100px; left: 100px; }
+
+    /* Card */
+    .card {
+      position: relative; z-index: 2;
+      background: var(--dark2);
+      border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 28px;
+      padding: 60px 50px;
+      max-width: 520px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      animation: slideUp 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Success icon */
+    .success-ring {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: rgba(34,197,94,0.1);
+      border: 2px solid rgba(34,197,94,0.3);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 32px;
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.2); }
+      50%       { box-shadow: 0 0 0 16px rgba(34,197,94,0); }
+    }
+    .success-ring i { font-size: 42px; color: var(--success); }
+
+    /* Avatar initials */
+    .user-avatar {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 800; color: white;
+      margin: 0 auto 20px;
+      border: 3px solid rgba(212,175,55,0.3);
+    }
+
+    .welcome-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(212,175,55,0.1);
+      border: 1px solid rgba(212,175,55,0.25);
+      color: var(--gold); padding: 6px 18px; border-radius: 50px;
+      font-size: 12px; font-weight: 600; margin-bottom: 20px;
+    }
+
+    .welcome-title {
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 900; margin-bottom: 12px; line-height: 1.2;
+    }
+    .welcome-title span { color: var(--gold); }
+
+    .welcome-sub {
+      color: var(--gray); font-size: 15px; line-height: 1.8;
+      margin-bottom: 40px;
+    }
+
+    /* Info pills */
+    .info-pills {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+      margin-bottom: 40px;
+    }
+    .info-pill {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--dark3);
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 8px 16px; border-radius: 50px;
+      font-size: 13px; color: var(--gray);
+    }
+    .info-pill i { color: var(--gold); font-size: 12px; }
+
+    /* Countdown */
+    .countdown-wrap {
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+
+    .countdown-ring {
+      position: relative; width: 80px; height: 80px;
+    }
+    .countdown-ring svg {
+      transform: rotate(-90deg);
+    }
+    .countdown-ring circle {
+      fill: none;
+      stroke-width: 4;
+    }
+    .countdown-ring .track { stroke: rgba(255,255,255,0.08); }
+    .countdown-ring .progress {
+      stroke: var(--gold);
+      stroke-linecap: round;
+      stroke-dasharray: 220;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .countdown-num {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; font-weight: 900; color: var(--gold);
+    }
+
+    .countdown-label {
+      font-size: 14px; color: var(--gray);
+    }
+    .countdown-label span { color: var(--white); font-weight: 600; }
+
+    /* Skip button */
+    .btn-skip {
+      margin-top: 24px;
+      background: var(--gold); color: var(--black);
+      padding: 14px 36px; border-radius: 50px;
+      font-weight: 800; font-size: 15px;
+      border: none; cursor: pointer; width: 100%;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: background 0.2s, transform 0.2s;
+      text-decoration: none;
+    }
+    .btn-skip:hover { background: var(--gold-dark); transform: translateY(-1px); }
+
+    /* Logo top */
+    .top-logo {
+      position: absolute; top: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; z-index: 2;
+    }
+    .top-logo-icon {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: white;
+    }
+    .top-logo-text { font-size: 18px; font-weight: 800; color: var(--white); }
+    .top-logo-text span { color: var(--gold); }
+
+    @media (max-width: 480px) {
+      .card { padding: 40px 24px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- Logo -->
+  <a href="index.html" class="top-logo">
+    <div class="top-logo-icon"><i class="fa-solid fa-bus"></i></div>
+    <span class="top-logo-text">Safari<span>Pay</span></span>
+  </a>
+
+  <!-- Card -->
+  <div class="card">
+
+    <!-- Success ring -->
+    <div class="success-ring">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+
+    <!-- User avatar -->
+    <div class="user-avatar" id="userAvatar">AB</div>
+
+    <!-- Badge -->
+    <div class="welcome-label">
+      <i class="fa-solid fa-party-horn"></i>
+      Account created successfully!
+    </div>
+
+    <!-- Title -->
+    <h1 class="welcome-title">
+      Welcome aboard,<br>
+      <span id="userName">Abigael</span>! 👋
+    </h1>
+
+    <p class="welcome-sub">
+      Your SafiriPay account is ready.<br>
+      Let's get you set up with your route and subscription.
+    </p>
+
+    <!-- Info pills -->
+    <div class="info-pills">
+      <div class="info-pill">
+        <i class="fa-solid fa-envelope"></i>
+        <span id="userEmail">your@email.com</span>
+      </div>
+      <div class="info-pill">
+        <i class="fa-solid fa-phone"></i>
+        <span id="userPhone">07XX XXX XXX</span>
+      </div>
+    </div>
+
+    <!-- Countdown -->
+    <div class="countdown-wrap">
+      <div class="countdown-ring">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle class="track" cx="40" cy="40" r="35"/>
+          <circle class="progress" id="progressRing" cx="40" cy="40" r="35"/>
+        </svg>
+        <div class="countdown-num" id="countNum">5</div>
+      </div>
+      <p class="countdown-label">Taking you to <span>choose your company</span> in a moment…</p>
+    </div>
+
+    <!-- Skip button -->
+    <button class="btn-skip" onclick="goNow()">
+      <i class="fa-solid fa-arrow-right"></i>
+      Choose my company now
+    </button>
+
+  </div>
+
+  <script>
+    // ── LOAD USER FROM localStorage ──
+    const user = JSON.parse(localStorage.getItem('safiriUser') || '{}');
+
+    if (user.firstName) {
+      document.getElementById('userName').textContent = user.firstName;
+
+      // Initials avatar
+      const initials = (user.firstName[0] + (user.lastName ? user.lastName[0] : '')).toUpperCase();
+      document.getElementById('userAvatar').textContent = initials;
+    }
+    if (user.email)  document.getElementById('userEmail').textContent = user.email;
+    if (user.phone)  document.getElementById('userPhone').textContent = user.phone;
+
+    // ── COUNTDOWN ──
+    const totalTime = 5; // seconds
+    const circumference = 2 * Math.PI * 35; // ≈ 220
+    const ring = document.getElementById('progressRing');
+    const numEl = document.getElementById('countNum');
+
+    ring.style.strokeDasharray = circumference;
+    ring.style.strokeDashoffset = 0;
+
+    let remaining = totalTime;
+
+    const timer = setInterval(() => {
+      remaining--;
+      numEl.textContent = remaining;
+
+      // Shrink the ring
+      const offset = circumference * (1 - remaining / totalTime);
+      ring.style.strokeDashoffset = offset;
+
+      if (remaining <= 0) {
+        clearInterval(timer);
+        goNow();
+      }
+    }, 1000);
+
+    function goNow() {
+      clearInterval(timer);
+      window.location.href = 'companies.html';
+    }
+  </script>
+
+</body>
+</html>
